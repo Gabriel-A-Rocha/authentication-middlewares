@@ -24,7 +24,15 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user, pro } = request;
+
+  if (pro || user.todos.length < 10) {
+    next();
+  }
+
+  return response
+    .status(400)
+    .json("error: You have achieved the maximum amount of free ToDos");
 }
 
 function checksTodoExists(request, response, next) {
