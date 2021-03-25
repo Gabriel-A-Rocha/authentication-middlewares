@@ -28,19 +28,55 @@ function checksCreateTodosUserAvailability(request, response, next) {
 
   if (pro || user.todos.length < 10) {
     next();
+  } else {
+    return response
+      .status(403)
+      .json("error: You have achieved the maximum amount of free ToDos");
   }
-
-  return response
-    .status(400)
-    .json("error: You have achieved the maximum amount of free ToDos");
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params;
+
+  const validTodoId = validate(id);
+
+  if (!validTodoId) {
+    return response.status(400).json({ error: "Invalid todo id" });
+  }
+
+  const userFound = users.find((u) => u.username === username);
+
+  if (!userFound) {
+    return response.status(404).json({ error: "Username not found" });
+  }
+
+  const todoFound = userFound.todos.find((t) => t.id === id);
+
+  if (!todoFound) {
+    return response
+      .status(404)
+      .json({ error: `Todo not found in ${username}'s tasks` });
+  }
+
+  request.todo = todoFound;
+  request.user = userFound;
+
+  next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+
+  const foundUser = users.find((u) => u.id === id);
+
+  if (!foundUser) {
+    return response.status(404).json({ error: "User not found" });
+  }
+
+  request.user = foundUser;
+
+  next();
 }
 
 app.post("/users", (request, response) => {
