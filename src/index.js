@@ -24,15 +24,15 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  const { user, pro } = request;
+  const { user } = request;
 
-  if (pro || user.todos.length < 10) {
-    next();
-  } else {
-    return response
-      .status(403)
-      .json("error: You have achieved the maximum amount of free ToDos");
+  if (user.pro || user.todos.length < 10) {
+    return next();
   }
+
+  return response
+    .status(403)
+    .json("error: You have achieved the maximum amount of free ToDos");
 }
 
 function checksTodoExists(request, response, next) {
